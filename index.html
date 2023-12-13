@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snimanje Zvuka</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="recordingIndicator"></div>
+  <audio id="audioPlayer" controls></audio>
+  <div class="button-container">
+    <button id="startRecord"></button>
+    <button id="stopRecord"></button>
+    <button id="saveRecording"></button>
+    <button id="deleteRecording"></button>
+  </div>
+  <input type="text" id="recordingName" placeholder="Enter recording name">
+  <h3>Recordings from cloud storage</h1>
+  <div id="fileList"></div>
+  <script  type="module" src="app.js"></script>
+</body>
+</html>
