@@ -3,7 +3,8 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const { Pool } = require('pg');
-
+const dotenv = require('dotenv');
+dotenv.config({ path: '.env' });
 
 const app = express();
 const port = 8080;
@@ -67,6 +68,7 @@ app.post('/upload', upload.fields([{ name: 'name', maxCount: 1 }, { name: 'blob'
 
 app.get('/files', async (req, res) => {
   try {
+    console.log("aaaaaaa "+process.env.HOST);
     const query = 'select * from audio_files where name is not null';
     const result = await pool.query(query);
     
