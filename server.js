@@ -29,7 +29,7 @@ const pool = new Pool({
   user: process.env.USER,
   host: process.env.HOST,
   database: process.env.DATABASE,
-  password: process.env.PASSWORD,
+  password: process.env.PASS,
   port: process.env.PORT,
 });
 
@@ -68,7 +68,7 @@ app.post('/upload', upload.fields([{ name: 'name', maxCount: 1 }, { name: 'blob'
 
 app.get('/files', async (req, res) => {
   try {
-    console.log("aaaaaaa "+process.env.HOST);
+    console.log("aaaaaaa "+typeof(process.env.PASS));
     const query = 'select * from audio_files where name is not null';
     const result = await pool.query(query);
     
