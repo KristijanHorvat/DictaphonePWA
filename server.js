@@ -9,16 +9,27 @@ const app = express();
 const port = 8080;
 app.use(cors());
 app.set('view engine', 'ejs');
+app.use(express.static('public'));
+
 app.get('/', (req, res) => {
   res.render('index'); // Zamijenite 'index' s imenom vaše EJS datoteke (bez ekstenzije)
 });
-
+/*
 const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
   database: 'postgres',
   password: '5432',
   port: 5432, // Change as per your PostgreSQL configuration
+});
+
+*/
+const pool = new Pool({
+  user: process.env.USER,
+  host: process.env.HOST,
+  database: process.env.DATABASE,
+  password: process.env.PASSWORD,
+  port: process.env.PORT,
 });
 
 const storage = multer.diskStorage({
