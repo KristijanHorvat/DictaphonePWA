@@ -10,8 +10,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "browser-env": "^2.0.21",
+    "browserenv": "^1.0.0",
+    "browserify": "^17.0.0",
     "cors": "^2.8.5",
+    "ejs": "^3.1.9",
     "express": "^4.18.2",
-    "multer": "^1.4.5-lts.1"
+    "jsdom": "^23.0.1",
+    "multer": "^1.4.5-lts.1",
+    "pg": "^8.11.3"
   }
 }
