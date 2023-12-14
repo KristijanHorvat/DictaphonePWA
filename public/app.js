@@ -72,7 +72,7 @@ async function uploadRec(recording) {
   const formData = new FormData()
   formData.append('name', recording.name)
   formData.append('blob', recording.blob)
-  fetch('http://localhost:8080/upload', {
+  fetch('/upload', {
     method: 'POST',
     body: formData
   })
@@ -91,7 +91,7 @@ async function uploadRec(recording) {
 // Fetch files from the server and display them
 async function fetchAndDisplayFiles() {
   try {
-    const response = await fetch('http://localhost:8080/files'); // Replace with your server address
+    const response = await fetch('/files'); // Replace with your server address
     const files = await response.json();
     
     const fileList = document.getElementById('fileList');
