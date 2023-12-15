@@ -19,7 +19,9 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {
   res.render('index'); // Zamijenite 'index' s imenom vaše EJS datoteke (bez ekstenzije)
 });
-/*
+app.get('/uploads', (req, res) => {
+  res.render('uploads'); // Zamijenite 'index' s imenom vaše EJS datoteke (bez ekstenzije)
+});
 const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
@@ -28,7 +30,7 @@ const pool = new Pool({
   port: 5432, // Change as per your PostgreSQL configuration
 });
 
-*/
+/*
 const pool = new Pool({
   user: 'postgres_db_qgmw_user',
   host: 'dpg-cl0f72is1bgc73a12mm0-a',
@@ -36,7 +38,7 @@ const pool = new Pool({
   password: 'U0GUQNQ4jwkKm8Xmx28ldyrd3B06df73',
   port: 5432,
 });
-
+*/
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -50,6 +52,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 app.use(express.static('public'));
+const uploadsPath = path.join(__dirname, 'uploads');
+app.use('/uploads', express.static(uploadsPath));
 
 app.post('/upload', upload.fields([{ name: 'name', maxCount: 1 }, { name: 'blob' }]), async (req, res) => {
   try {
