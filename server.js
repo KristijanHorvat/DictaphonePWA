@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {
   res.render('index'); // Zamijenite 'index' s imenom vaše EJS datoteke (bez ekstenzije)
 });
-
+/*
 const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
@@ -28,7 +28,7 @@ const pool = new Pool({
   port: 5432, // Change as per your PostgreSQL configuration
 });
 
-/*
+*/
 const pool = new Pool({
   user: process.env.USER,
   host: process.env.HOST,
@@ -36,7 +36,7 @@ const pool = new Pool({
   password: process.env.PASS,
   port: process.env.PORT,
 });
-*/
+
 
 const upload = multer();
 
@@ -68,7 +68,7 @@ app.get('/files', async (req, res) => {
     const result = await client.query('SELECT name FROM audio_files where name is not null');
     const files = result.rows.map(row => row.name);
     client.release();
-    console.log(result);
+
     console.log(files);
     res.json(files);
   } catch (error) {
