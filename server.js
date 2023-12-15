@@ -3,6 +3,7 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const { Pool } = require('pg');
+const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 dotenv.config({ path: '.env' });
 
@@ -12,10 +13,13 @@ app.use(cors());
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
+app.use(bodyParser.json());
+ app.use(express.urlencoded({ extended: true }));
+
 app.get('/', (req, res) => {
   res.render('index'); // Zamijenite 'index' s imenom vaše EJS datoteke (bez ekstenzije)
 });
-/*
+
 const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
@@ -24,7 +28,7 @@ const pool = new Pool({
   port: 5432, // Change as per your PostgreSQL configuration
 });
 
-*/
+/*
 const pool = new Pool({
   user: process.env.USER,
   host: process.env.HOST,
@@ -32,17 +36,9 @@ const pool = new Pool({
   password: process.env.PASS,
   port: process.env.PORT,
 });
+*/
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/') // Save uploaded files to the 'uploads' directory
-  },
-  filename: function (req, file, cb) {
-    cb(null, req.body.name + path.extname(file.originalname));
-  }
-});
-
-const upload = multer({ storage: storage });
+const upload = multer();
 
 app.use(express.static('public'));
 
@@ -68,16 +64,41 @@ app.post('/upload', upload.fields([{ name: 'name', maxCount: 1 }, { name: 'blob'
 
 app.get('/files', async (req, res) => {
   try {
-    console.log("aaaaaaa "+typeof(process.env.PASS));
-    const query = 'select * from audio_files where name is not null';
-    const result = await pool.query(query);
-    
-    const files = result.rows;
-    
+    const client = await pool.connect();
+    const result = await client.query('SELECT name FROM audio_files where name is not null');
+    const files = result.rows.map(row => row.name);
+    client.release();
+    console.log(result);
+    console.log(files);
     res.json(files);
   } catch (error) {
     console.error('Error fetching files:', error);
-    res.status(500).json({ error: 'Error fetching files' });
+    res.status(500).send('Error fetching files');
+  }
+});
+
+// Endpoint to serve audio Blob data by file name
+app.get('/file/:file_name', async (req, res) => {
+  const fileName = req.params.file_name;
+
+  try {
+    const client = await pool.connect();
+    const result = await client.query('SELECT blob FROM audio_files WHERE name = $1', [fileName]);
+   
+    if (result.rows.length === 0 || !result.rows[0].blob) {
+      client.release();
+      return res.status(404).send('File not found');
+    }
+
+    const audioBlob = result.rows[0].blob;
+
+    // Send the Blob data as a response
+    res.set('Content-Type', 'audio/wav'); // Adjust content type based on file type
+    res.send(audioBlob);
+    client.release();
+  } catch (error) {
+    console.error('Error fetching file:', error);
+    res.status(500).send('Error fetching file');
   }
 });
 /*pool.query('select * from audio_files where name is not null', (err, res)=>{

@@ -72,9 +72,14 @@ async function uploadRec(recording) {
   const formData = new FormData()
   formData.append('name', recording.name)
   formData.append('blob', recording.blob)
+  
+  console.log("name prije up: "+recording.name)
+  console.log("blob prije up: "+recording.blob)
+
   fetch('/upload', {
     method: 'POST',
-    body: formData
+    body: formData,
+   
   })
   .then(response => {
     if(response.ok) {
@@ -88,32 +93,34 @@ async function uploadRec(recording) {
   });
     }
 
-// Fetch files from the server and display them
-async function fetchAndDisplayFiles() {
-  try {
-    const response = await fetch('/files'); // Replace with your server address
-    const files = await response.json();
+    async function fetchAndDisplayFiles() {
+      try {
+        const response = await fetch('/files'); // Replace with your server address
+        const files = await response.json();
+
+        const fileList = document.getElementById('fileList');
+        files.forEach(file => {
+          console.log("fil: "+file.name);
+          const link = document.createElement('a');
+          link.href = `/file/${file}`;
+          link.textContent = file;
+          link.classList.add('file-link');
     
-    const fileList = document.getElementById('fileList');
-    files.forEach(file => {
-      const link = document.createElement('a');
-      link.href = `/file/${file.file_id}`;
-      link.textContent = file.name;
-      link.classList.add('file-link');
-
-      const audio = document.createElement('audio');
-      const audioURL = `/file/${file.file_id}`; // Replace with your server endpoint to fetch the file Blob data
-      audio.controls = true;
-      audio.src = audioURL;
-
-      fileList.appendChild(link);
-      fileList.appendChild(audio);
-      fileList.appendChild(document.createElement('br'));
-    });
-  } catch (error) {
-    console.error('Error fetching files:', error);
-  }
-}
+          const audio = document.createElement('audio');
+          const audioURL = `/file/${file.file_id}`; // Replace with your server endpoint to fetch the file Blob data
+          audio.controls = true;
+          audio.src = audioURL;
+    
+          fileList.appendChild(link);
+          fileList.appendChild(audio);
+          fileList.appendChild(document.createElement('br'));
+        });
+      } catch (error) {
+        console.error('Error fetching files:', error);
+      }
+    }
+    
+    
 
 fetchAndDisplayFiles();
 async function startRecording() {
