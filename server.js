@@ -6,12 +6,23 @@ const { Pool } = require('pg');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 dotenv.config({ path: '.env' });
+const fs = require('fs');
 
 const app = express();
 const port = 8080;
 app.use(cors());
+// Set 'views' directory to 'public/views'
+app.set('views', path.join(__dirname, 'public', 'views'));
+
+// Set EJS as the view engine
 app.set('view engine', 'ejs');
-app.use(express.static('public'));
+
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+//app.set('view engine', 'ejs');
+//app.use(express.static('public'));
+const audioDirectory = 'uploads/'; 
 
 app.use(bodyParser.json());
  app.use(express.urlencoded({ extended: true }));
@@ -127,6 +138,24 @@ app.get('/file/:file_name', async (req, res) => {
 /*pool.query('select * from audio_files where name is not null', (err, res)=>{
   return console.log(res.rows);
 })*/
+
+const uploadDir = path.join(__dirname, 'uploads'); // Path to your uploads directory
+
+app.get('/audioList', (req, res) => {
+  fs.readdir(uploadDir, (err, files) => {
+    if (err) {
+      res.status(500).json({ error: 'Error reading audio files' });
+      return;
+    }
+
+    const wavFiles = files.filter(file => {
+      return path.extname(file).toLowerCase() === '.wav';
+    });
+
+    res.json(wavFiles);
+  });
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });

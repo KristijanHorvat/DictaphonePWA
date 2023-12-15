@@ -7,9 +7,9 @@ const startRecordButton = document.getElementById('startRecord');
 const stopRecordButton = document.getElementById('stopRecord');
 const saveRecordingButton = document.getElementById('saveRecording');
 
-/*
+
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js')
+  navigator.serviceWorker.register('/service-worker.js')
     .then((registration) => {
       console.log('Service Worker registered with scope:', registration.scope);
     })
@@ -17,7 +17,6 @@ if ('serviceWorker' in navigator) {
       console.error('Service Worker registration failed:', error);
     });
 }
-*/
 
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 
@@ -25,7 +24,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
   stopRecordButton.addEventListener('click', stopRecording);
 
   saveRecordingButton.addEventListener('click', function (event) {
-    //if ("serviceWorker" in navigator && "SyncManager" in window) {
+    if ("serviceWorker" in navigator && "SyncManager" in window) {
         if (audioPlayer.src) {
           const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
           const recordingName = document.getElementById('recordingName').value.trim();
@@ -40,7 +39,8 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             blob: audioBlob
           };
           console.log("audioblob: "+audioBlob)
-          uploadRec(recordingObject);
+          //uploadRec(recordingObject);
+          saveRecordingToIndexedDB(recordingObject)
 
           navigator.serviceWorker.ready
         .then(function(registration) {
@@ -50,7 +50,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
           console.log('Background sync registered!');
         })
         }
-  // }
+   }
 });
 
 console.log("start, stop, save are available!");
@@ -69,67 +69,7 @@ deleteRecordingButton.addEventListener('click', deleteRecording);
 const recordingIndicator = document.getElementById('recordingIndicator');
 
 let isRecording = false;
-
-async function uploadRec(recording) {
-  const formData = new FormData()
-  formData.append('name', recording.name)
-  formData.append('blob', recording.blob)
-  
-  console.log("name prije up: "+recording.name)
-  console.log("blob prije up: "+recording.blob)
-  console.log("json stringify name : "+JSON.stringify(recording.name))
-  console.log("json stringify blob: "+JSON.stringify(recording.blob))
-  
-
-  fetch('/upload', {
-    method: 'POST',
-    body: formData,
-   
-  })
-  .then(response => {
-    if(response.ok) {
-      console.log('File uploaded successfully!');
-    } else {
-      console.error('File upload failed.');
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
-    }
-
-    async function fetchAndDisplayFiles() {
-      try {
-        const response = await fetch('/files'); // Replace with your server address
-        const files = await response.json();
-
-        console.log(JSON.stringify(files));
-
-        const fileList = document.getElementById('fileList');
-        files.forEach(file => {
-          console.log("fil: "+file);
-          const link = document.createElement('a');
-          link.href = `/file/${file}`;
-          link.textContent = file;
-          link.classList.add('file-link');
     
-          const audio = document.createElement('audio');
-          const audioURL = `/file/${file}`; // Replace with your server endpoint to fetch the file Blob data
-          audio.controls = true;
-          audio.src = audioURL;
-    
-          fileList.appendChild(link);
-          fileList.appendChild(audio);
-          fileList.appendChild(document.createElement('br'));
-        });
-      } catch (error) {
-        console.error('Error fetching files:', error);
-      }
-    }
-    
-    
-
-fetchAndDisplayFiles();
 async function startRecording() {
   if (!isRecording) {
     // Start recording
@@ -168,6 +108,7 @@ function stopRecording() {
 function deleteRecording() {
   audioChunks = []; 
   audioPlayer.src = ''; 
+  showHideNameRec();
   alert("Deleted current recording from player!");
 }
 
@@ -183,7 +124,7 @@ function showHideNameRec() {
 }
 });
 
-/*
+
 function saveRecordingToIndexedDB(recordingObject) {
   const request = indexedDB.open('RecordingsDB', 1);
 
@@ -215,4 +156,26 @@ function saveRecordingToIndexedDB(recordingObject) {
     };
   };
 }
-*/
+const audioList = document.getElementById('audioList');
+
+fetch('/audioList') // Fetch the list of audio files from the server
+  .then(response => response.json())
+  .then(audioFiles => {
+    audioFiles.forEach(file => {
+      const audioElement = document.createElement('audio');
+      audioElement.controls = true;
+      audioElement.src = `/uploads/${file}`; // Path to your audio files
+
+      const fileNameElement = document.createElement('p');
+      fileNameElement.textContent = file; // Display the file name
+
+      const audioContainer = document.createElement('div');
+      audioContainer.appendChild(fileNameElement);
+      audioContainer.appendChild(audioElement);
+
+      audioList.appendChild(audioContainer);
+    });
+  })
+  .catch(error => {
+    console.error('Error fetching audio files:', error);
+  });
