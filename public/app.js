@@ -12,6 +12,8 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/service-worker.js')
     .then((registration) => {
       console.log('Service Worker registered with scope:', registration.scope);
+      requestNotificationPermission();
+      console.log('requestNotificationPermission');
     })
     .catch((error) => {
       console.error('Service Worker registration failed:', error);
@@ -24,7 +26,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
   stopRecordButton.addEventListener('click', stopRecording);
 
   saveRecordingButton.addEventListener('click', function (event) {
-    if ("serviceWorker" in navigator && "SyncManager" in window) {
+    if ("serviceWorker" in navigator && "SyncManager" in window  && 'Notification' in window) {
         if (audioPlayer.src) {
           const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
           const recordingName = document.getElementById('recordingName').value.trim();
@@ -179,3 +181,21 @@ fetch('/audioList') // Fetch the list of audio files from the server
   .catch(error => {
     console.error('Error fetching audio files:', error);
   });
+
+  // Request notification permission from the main JavaScript file
+function requestNotificationPermission() {
+  if ('Notification' in window) {
+    Notification.requestPermission().then(function(permission) {
+      if (permission === 'granted') {
+        console.log('Notification permission granted');
+        // You can handle further actions upon permission granted
+      } else if (permission === 'denied') {
+        console.warn('Notification permission denied');
+        // Handle denial of permission (optional)
+      }
+    });
+  } else {
+    console.error('Notifications not supported in this browser');
+    // Handle lack of support for notifications (optional)
+  }
+}

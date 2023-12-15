@@ -88,13 +88,74 @@ self.addEventListener
   });
   
 
-
+/*
 self.addEventListener('sync', function (event) {
   if (event.tag === 'uploadRecordings') {
     event.waitUntil(uploadRecordings());
   }
 });
+*/
+self.addEventListener('sync', function(event) {
+  if (event.tag === 'uploadRecordings') {
+    event.waitUntil(uploadRecordings()
+      .then(function() {
+        console.log("upload complete");
+        return self.registration.showNotification('Upload completed!', {
+          body: 'Your recordings have been uploaded.',
+          icon: 'icons/icon-144x144.png'
+        });
+      })
+      .catch(function(err) {
+        console.error('Error uploading recordings:', err);
+      })
+    );
+  }
+});
+function uploadRecordings() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('RecordingsDB', 1);
 
+    request.onerror = function(event) {
+      // Handle errors while opening the database
+      console.error('Database error: ', event.target.error);
+      reject(event.target.error);
+    };
+
+    request.onsuccess = function(event) {
+      const db = event.target.result;
+      const transaction = db.transaction(['recordings'], 'readwrite');
+      const objectStore = transaction.objectStore('recordings');
+      const uploadPromises = [];
+
+      objectStore.openCursor().onsuccess = function(cursorEvent) {
+        const cursor = cursorEvent.target.result;
+
+        if (cursor) {
+          // Access each record here, for example:
+          const record = cursor.value;
+          console.log('Record:', record);
+          const uploadPromise = uploadRec(record); // Assuming uploadRec is a function handling the upload
+          uploadPromises.push(uploadPromise);
+          // Move to the next record
+          cursor.continue();
+        } else {
+          // No more records, resolve once all uploads are complete
+          Promise.all(uploadPromises)
+            .then(() => {
+              console.log('All records uploaded successfully');
+              resolve();
+            })
+            .catch((error) => {
+              console.error('Error uploading records:', error);
+              reject(error);
+            });
+        }
+      };
+    };
+  });
+}
+
+/*
 function uploadRecordings() {
   const request = indexedDB.open('RecordingsDB', 1);
 
@@ -126,7 +187,7 @@ function uploadRecordings() {
       }
     };
   };
-}
+}*/
 
 async function uploadRec(recording) {
   const formData = new FormData()
