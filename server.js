@@ -69,7 +69,7 @@ app.use('/uploads', express.static(uploadsPath));
 app.post('/upload', upload.fields([{ name: 'name', maxCount: 1 }, { name: 'blob' }]), async (req, res) => {
   try {
     const { name, blob } = req.files;
-
+/*
     altFilename= req.body.name;
 
     const fileBuffer = Buffer.from(blob);
@@ -79,7 +79,7 @@ app.post('/upload', upload.fields([{ name: 'name', maxCount: 1 }, { name: 'blob'
 
     const query = 'INSERT INTO audio_files (name, blob) VALUES ($1, $2)';
     await pool.query(query, [altFilename, fileBuffer]);
-
+*/
     res.status(200).send('File uploaded successfully!');
   } catch (error) {
     console.error('Error uploading file:', error);

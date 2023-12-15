@@ -8,8 +8,16 @@ self.addEventListener('install', function (event) {
         '404.html',
         'app.js',
         'manifest.json',
-        '/'
-        // Add other assets you want to cache here
+        '/',
+        '/icons/icon-144x144.png',
+        '/icons/icon-512x512.png',
+        '/icons/maskable_icon.png',
+        '/css/icons/delete.png',
+        '/css/icons/microphone.png',
+        '/css/icons/record.png',
+        '/css/icons/stop.png',
+        '/css/icons/upload.png',
+        '/css/style.css'
       ]);
     })
   );
