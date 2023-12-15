@@ -30,11 +30,11 @@ const pool = new Pool({
 
 */
 const pool = new Pool({
-  user: process.env.USER,
-  host: process.env.HOST,
-  database: process.env.DATABASE,
-  password: process.env.PASS,
-  port: process.env.PORT,
+  user: 'postgres_db_qgmw_user',
+  host: 'dpg-cl0f72is1bgc73a12mm0-a.frankfurt-postgres.render.com/',
+  database: 'postgres_db_qgmw',
+  password: 'U0GUQNQ4jwkKm8Xmx28ldyrd3B06df73',
+  port: 5432,
 });
 
 
