@@ -18,6 +18,7 @@ if ('serviceWorker' in navigator) {
     });
 }
 */
+
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 
   startRecordButton.addEventListener('click', startRecording);
@@ -102,16 +103,18 @@ async function uploadRec(recording) {
         const response = await fetch('/files'); // Replace with your server address
         const files = await response.json();
 
+        console.log(JSON.stringify(files));
+
         const fileList = document.getElementById('fileList');
         files.forEach(file => {
-          console.log("fil: "+file.name);
+          console.log("fil: "+file);
           const link = document.createElement('a');
           link.href = `/file/${file}`;
           link.textContent = file;
           link.classList.add('file-link');
     
           const audio = document.createElement('audio');
-          const audioURL = `/file/${file.file_id}`; // Replace with your server endpoint to fetch the file Blob data
+          const audioURL = `/file/${file}`; // Replace with your server endpoint to fetch the file Blob data
           audio.controls = true;
           audio.src = audioURL;
     

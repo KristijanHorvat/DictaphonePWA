@@ -38,7 +38,16 @@ const pool = new Pool({
 });
 
 
-const upload = multer();
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, req.body.name)
+  }
+})
+
+const upload = multer({ storage: storage })
 
 app.use(express.static('public'));
 
@@ -91,7 +100,16 @@ app.get('/file/:file_name', async (req, res) => {
       return res.status(404).send('File not found');
     }
 
+    
     const audioBlob = result.rows[0].blob;
+    const blob = new Blob();
+    blob.text(audioBlob)
+  .then(text => {
+    console.log(text); // Ovdje imate pristup konvertovanom tekstu iz Blob-a
+  })
+  .catch(error => {
+    console.error('Error occurred:', error);
+  });
 
     // Send the Blob data as a response
     res.set('Content-Type', 'audio/wav'); // Adjust content type based on file type
