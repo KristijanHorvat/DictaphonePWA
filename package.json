@@ -11,7 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.20.2",
-    "browser-env": "^2.0.21",
     "browserenv": "^1.0.0",
     "browserify": "^17.0.0",
     "cors": "^2.8.5",
