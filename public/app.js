@@ -32,12 +32,13 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             alert('Please enter a recording name');
             return;
           }
+          console.log("audiochunks: "+audioChunks.toString())
           var recName = recordingName + '.wav'
           const recordingObject = {
             name: recName,
             blob: audioBlob
           };
-          
+          console.log("audioblob: "+audioBlob)
           uploadRec(recordingObject);
 
           navigator.serviceWorker.ready
@@ -75,6 +76,9 @@ async function uploadRec(recording) {
   
   console.log("name prije up: "+recording.name)
   console.log("blob prije up: "+recording.blob)
+  console.log("json stringify name : "+JSON.stringify(recording.name))
+  console.log("json stringify blob: "+JSON.stringify(recording.blob))
+  
 
   fetch('/upload', {
     method: 'POST',

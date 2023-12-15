@@ -50,7 +50,8 @@ app.post('/upload', upload.fields([{ name: 'name', maxCount: 1 }, { name: 'blob'
 
     const fileBuffer = Buffer.from(blob);
 
-    console.log(altFilename);
+    console.log("alt filename "+altFilename+ " file buffer: " + fileBuffer);
+    console.log("json stringify: "+JSON.stringify(req.body))
 
     const query = 'INSERT INTO audio_files (name, blob) VALUES ($1, $2)';
     await pool.query(query, [altFilename, fileBuffer]);
