@@ -8,17 +8,17 @@
     "theme_color": "#2196f3",
     "icons": [
       {
-        "src": "/icons/icon-144x144.png",
+        "src": "/css/icons/icon-144x144.png",
         "sizes": "144x144",
         "type": "image/png"
     },
     {
-      "src": "/icons/icon-512x512.png",
+      "src": "/css/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
   },
   {
-    "src": "icons/maskable_icon.png",
+    "src": "/css/icons/maskable_icon.png",
     "sizes": "196x196",
     "type": "image/png",
     "purpose": "any maskable"

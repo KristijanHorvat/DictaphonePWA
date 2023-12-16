@@ -1,2 +1,4 @@
 # DictaphonePWA
- PWA example app
+ PWA example app 
+
+ Tested in Google Chrome
