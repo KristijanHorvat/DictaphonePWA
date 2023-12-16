@@ -25,8 +25,7 @@ self.addEventListener('install', function (event) {
 
 self.addEventListener
   ("activate", (event) => {
-    const cacheWhitelist
-      = [staticCacheName];
+    const cacheWhitelist = [staticCacheName];
     event.waitUntil
       (
         caches.keys().then((cacheNames) => {
@@ -48,25 +47,31 @@ self.addEventListener('fetch', (event) => {
   if (request.url.includes('.wav')) {
     event.respondWith(fetch(request));
   } else {
-    event.respondWith(
-      caches.match(event.request).then((response) => {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request).then((fetchResponse) => {
-          if (!fetchResponse || fetchResponse.status !== 200 || fetchResponse.type !== 'basic') {
-            return caches.match('404.html');
-          }
-          const responseToCache = fetchResponse.clone();
-          caches.open(staticCacheName).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-          return fetchResponse;
-        }).catch(() => {
-          return caches.match('offline.html');
-        });
-      })
-    );
+    event.respondWith
+      (
+        caches
+          .match(event.request
+          )
+          .then((response) => {
+            if (response) {
+              return response;
+            }
+            return fetch(event.request).then((response) => {
+              if (response.status === 404) {
+                return caches.match
+                  ("404.html");
+              }
+              return caches.open(staticCacheName).then((cache) => {
+                cache.put(event.request.url, response.clone());
+                return response;
+              });
+            });
+          })
+          .catch((error) => {
+            return caches.match
+              ("offline.html");
+          })
+      );
   }
 });
 
